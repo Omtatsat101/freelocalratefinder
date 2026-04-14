@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LocalRatesFinder — Free Local Rate Comparison Tool</title>
+<meta name="description" content="Compare mortgage rates, savings rates, auto loan rates, and CD rates from local banks and credit unions near you. 100% free, no signup required.">
+<meta name="keywords" content="local rates, mortgage rates, savings rates, auto loan rates, CD rates, rate finder, rate comparison, free calculator">
+<meta property="og:title" content="LocalRatesFinder — Compare Local Rates Free">
+<meta property="og:description" content="Find the best mortgage, savings, auto loan, and CD rates from banks and credit unions near you.">
+<style>
+:root {
+  --bg: #f8fafb;
+  --panel: #ffffff;
+  --ink: #1a1d23;
+  --muted: #6b7280;
+  --accent: #2563eb;
+  --accent-light: #dbeafe;
+  --green: #059669;
+  --green-light: #d1fae5;
+  --red: #dc2626;
+  --orange: #ea580c;
+  --line: #e5e7eb;
+  --shadow: 0 1px 3px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 40px rgba(0,0,0,0.08);
+  --radius: 12px;
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; }
+body { font-family: var(--font); background: var(--bg); color: var(--ink); line-height: 1.6; }
+
+/* Header */
+.header { background: var(--accent); color: white; padding: 0; }
+.header-inner { max-width: 1200px; margin: 0 auto; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+.logo { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+.logo span { color: #93c5fd; }
+.nav { display: flex; gap: 24px; }
+.nav a { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 14px; font-weight: 500; }
+.nav a:hover { color: white; }
+
+/* Hero */
+.hero { background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%); color: white; padding: 60px 24px; text-align: center; }
+.hero h1 { font-size: 42px; font-weight: 800; margin-bottom: 12px; letter-spacing: -1px; }
+.hero p { font-size: 18px; opacity: 0.9; max-width: 600px; margin: 0 auto 32px; }
+.hero-search { max-width: 500px; margin: 0 auto; display: flex; gap: 8px; }
+.hero-search input { flex: 1; padding: 14px 18px; border: none; border-radius: 8px; font-size: 16px; }
+.hero-search button { padding: 14px 28px; background: #f59e0b; color: #1a1d23; border: none; border-radius: 8px; font-weight: 700; font-size: 16px; cursor: pointer; }
+.hero-search button:hover { background: #fbbf24; }
+
+/* Stats bar */
+.stats-bar { background: white; border-bottom: 1px solid var(--line); padding: 16px 24px; }
+.stats-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; text-align: center; }
+.stat-item .stat-value { font-size: 28px; font-weight: 800; color: var(--accent); }
+.stat-item .stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+/* Main content */
+.main { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+.section-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+.section-subtitle { color: var(--muted); margin-bottom: 24px; }
+
+/* Rate cards */
+.rate-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-bottom: 48px; }
+.rate-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); transition: all 0.2s; }
+.rate-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+.rate-card .rate-type { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 4px; }
+.rate-card .rate-value { font-size: 36px; font-weight: 800; color: var(--accent); margin-bottom: 4px; }
+.rate-card .rate-label { font-size: 14px; color: var(--muted); margin-bottom: 16px; }
+.rate-card .rate-range { display: flex; justify-content: space-between; padding: 12px 0; border-top: 1px solid var(--line); font-size: 13px; }
+.rate-card .rate-range .low { color: var(--green); font-weight: 600; }
+.rate-card .rate-range .high { color: var(--red); font-weight: 600; }
+.rate-card .rate-updated { font-size: 11px; color: var(--muted); margin-top: 8px; }
+
+/* Calculators */
+.calc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px; margin-bottom: 48px; }
+.calculator { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow); }
+.calculator h3 { font-size: 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+.calculator h3 .icon { width: 32px; height: 32px; background: var(--accent-light); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+.form-group input, .form-group select { width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px; font-size: 15px; font-family: var(--font); }
+.form-group input:focus, .form-group select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
+.calc-btn { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.calc-btn:hover { background: #1d4ed8; }
+.calc-result { margin-top: 16px; padding: 16px; background: var(--green-light); border-radius: 8px; display: none; }
+.calc-result.show { display: block; }
+.calc-result .result-value { font-size: 28px; font-weight: 800; color: var(--green); }
+.calc-result .result-label { font-size: 13px; color: #065f46; }
+.calc-result .result-details { margin-top: 8px; font-size: 13px; color: #065f46; }
+
+/* Resources */
+.resources { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; margin-bottom: 48px; }
+.resource-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; text-decoration: none; color: var(--ink); transition: all 0.2s; }
+.resource-card:hover { box-shadow: var(--shadow-lg); border-color: var(--accent); }
+.resource-card .r-icon { font-size: 28px; margin-bottom: 8px; }
+.resource-card h4 { font-size: 15px; margin-bottom: 4px; }
+.resource-card p { font-size: 13px; color: var(--muted); }
+
+/* Comparison table */
+.compare-table { width: 100%; border-collapse: collapse; margin-bottom: 48px; background: var(--panel); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+.compare-table th { background: #f1f5f9; padding: 12px 16px; text-align: left; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); border-bottom: 2px solid var(--line); }
+.compare-table td { padding: 14px 16px; border-bottom: 1px solid var(--line); font-size: 14px; }
+.compare-table tr:hover { background: #f8fafc; }
+.compare-table .best { color: var(--green); font-weight: 700; }
+
+/* Footer */
+.footer { background: #1e293b; color: #94a3b8; padding: 48px 24px; }
+.footer-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 32px; }
+.footer h4 { color: white; font-size: 14px; margin-bottom: 12px; }
+.footer p, .footer a { font-size: 13px; color: #94a3b8; text-decoration: none; line-height: 2; }
+.footer a:hover { color: white; }
+.footer-brand { font-size: 13px; line-height: 1.8; }
+.footer-bottom { max-width: 1200px; margin: 0 auto; padding-top: 24px; border-top: 1px solid #334155; font-size: 12px; display: flex; justify-content: space-between; margin-top: 32px; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero h1 { font-size: 28px; }
+  .stats-inner { grid-template-columns: repeat(2, 1fr); }
+  .hero-search { flex-direction: column; }
+  .footer-inner { grid-template-columns: 1fr 1fr; }
+  .calc-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="logo">Local<span>Rates</span>Finder</div>
+    <nav class="nav">
+      <a href="#rates">Today's Rates</a>
+      <a href="#calculators">Calculators</a>
+      <a href="#compare">Compare</a>
+      <a href="#resources">Resources</a>
+    </nav>
+  </div>
+</div>
+
+<div class="hero">
+  <h1>Find the Best Rates Near You</h1>
+  <p>Compare mortgage, savings, auto loan, and CD rates from local banks and credit unions. 100% free. No signup. Updated daily.</p>
+  <div class="hero-search">
+    <input type="text" id="zipInput" placeholder="Enter your ZIP code..." maxlength="5">
+    <button onclick="searchRates()">Find Rates</button>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="stat-value">6.74%</div>
+      <div class="stat-label">Avg 30-yr Mortgage</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">4.85%</div>
+      <div class="stat-label">Avg Savings APY</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">6.89%</div>
+      <div class="stat-label">Avg Auto Loan</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">4.50%</div>
+      <div class="stat-label">Avg 12-mo CD</div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- Today's Rates -->
+  <div id="rates">
+    <h2 class="section-title">Today's National Average Rates</h2>
+    <p class="section-subtitle">Updated April 12, 2026. Rates vary by location, credit score, and institution.</p>
+
+    <div class="rate-grid">
+      <div class="rate-card">
+        <div class="rate-type">Mortgage</div>
+        <div class="rate-value">6.74%</div>
+        <div class="rate-label">30-Year Fixed Rate</div>
+        <div class="rate-range"><span>Low: <span class="low">6.25%</span></span><span>High: <span class="high">7.50%</span></span></div>
+        <div class="rate-range"><span>15-Year Fixed</span><span class="low">5.99%</span></div>
+        <div class="rate-range"><span>5/1 ARM</span><span>6.12%</span></div>
+        <div class="rate-updated">Freddie Mac PMMS + local adjustments</div>
+      </div>
+
+      <div class="rate-card">
+        <div class="rate-type">Savings</div>
+        <div class="rate-value">4.85%</div>
+        <div class="rate-label">High-Yield Savings APY</div>
+        <div class="rate-range"><span>Online Banks</span><span class="low">4.50–5.10%</span></div>
+        <div class="rate-range"><span>Credit Unions</span><span>3.50–4.75%</span></div>
+        <div class="rate-range"><span>Big Banks</span><span class="high">0.01–0.50%</span></div>
+        <div class="rate-updated">FDIC national rate survey</div>
+      </div>
+
+      <div class="rate-card">
+        <div class="rate-type">Auto Loan</div>
+        <div class="rate-value">6.89%</div>
+        <div class="rate-label">60-Month New Car</div>
+        <div class="rate-range"><span>Excellent Credit (750+)</span><span class="low">5.49%</span></div>
+        <div class="rate-range"><span>Good Credit (700-749)</span><span>6.89%</span></div>
+        <div class="rate-range"><span>Fair Credit (650-699)</span><span class="high">9.99%</span></div>
+        <div class="rate-updated">Credit union & bank averages</div>
+      </div>
+
+      <div class="rate-card">
+        <div class="rate-type">CD Rates</div>
+        <div class="rate-value">4.50%</div>
+        <div class="rate-label">12-Month Certificate</div>
+        <div class="rate-range"><span>6-Month CD</span><span class="low">4.65%</span></div>
+        <div class="rate-range"><span>2-Year CD</span><span>4.25%</span></div>
+        <div class="rate-range"><span>5-Year CD</span><span>4.00%</span></div>
+        <div class="rate-updated">National average, $10K minimum</div>
+      </div>
+
+      <div class="rate-card">
+        <div class="rate-type">Personal Loan</div>
+        <div class="rate-value">11.5%</div>
+        <div class="rate-label">Average APR</div>
+        <div class="rate-range"><span>Excellent Credit</span><span class="low">7.99%</span></div>
+        <div class="rate-range"><span>Good Credit</span><span>11.5%</span></div>
+        <div class="rate-range"><span>Fair Credit</span><span class="high">18.9%</span></div>
+        <div class="rate-updated">Unsecured personal loan averages</div>
+      </div>
+
+      <div class="rate-card">
+        <div class="rate-type">Credit Card</div>
+        <div class="rate-value">20.7%</div>
+        <div class="rate-label">Average APR</div>
+        <div class="rate-range"><span>Best Rate Cards</span><span class="low">14.99%</span></div>
+        <div class="rate-range"><span>Rewards Cards</span><span>19.99%</span></div>
+        <div class="rate-range"><span>Store Cards</span><span class="high">28.99%</span></div>
+        <div class="rate-updated">Federal Reserve G.19 report</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Free Calculators -->
+  <div id="calculators">
+    <h2 class="section-title">Free Financial Calculators</h2>
+    <p class="section-subtitle">No signup required. Your data stays on your device.</p>
+
+    <div class="calc-grid">
+      <!-- Mortgage Calculator -->
+      <div class="calculator">
+        <h3><span class="icon">🏠</span> Mortgage Payment Calculator</h3>
+        <div class="form-group">
+          <label>Home Price ($)</label>
+          <input type="number" id="mortPrice" value="350000" step="1000">
+        </div>
+        <div class="form-group">
+          <label>Down Payment (%)</label>
+          <input type="number" id="mortDown" value="20" min="0" max="100">
+        </div>
+        <div class="form-group">
+          <label>Interest Rate (%)</label>
+          <input type="number" id="mortRate" value="6.74" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Loan Term</label>
+          <select id="mortTerm">
+            <option value="360">30 Years</option>
+            <option value="180">15 Years</option>
+            <option value="120">10 Years</option>
+          </select>
+        </div>
+        <button class="calc-btn" onclick="calcMortgage()">Calculate Payment</button>
+        <div class="calc-result" id="mortResult">
+          <div class="result-value" id="mortPayment"></div>
+          <div class="result-label">Estimated Monthly Payment</div>
+          <div class="result-details" id="mortDetails"></div>
+        </div>
+      </div>
+
+      <!-- Auto Loan Calculator -->
+      <div class="calculator">
+        <h3><span class="icon">🚗</span> Auto Loan Calculator</h3>
+        <div class="form-group">
+          <label>Vehicle Price ($)</label>
+          <input type="number" id="autoPrice" value="35000" step="500">
+        </div>
+        <div class="form-group">
+          <label>Down Payment ($)</label>
+          <input type="number" id="autoDown" value="5000" step="500">
+        </div>
+        <div class="form-group">
+          <label>Interest Rate (%)</label>
+          <input type="number" id="autoRate" value="6.89" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Loan Term</label>
+          <select id="autoTerm">
+            <option value="72">72 Months</option>
+            <option value="60" selected>60 Months</option>
+            <option value="48">48 Months</option>
+            <option value="36">36 Months</option>
+          </select>
+        </div>
+        <button class="calc-btn" onclick="calcAuto()">Calculate Payment</button>
+        <div class="calc-result" id="autoResult">
+          <div class="result-value" id="autoPayment"></div>
+          <div class="result-label">Estimated Monthly Payment</div>
+          <div class="result-details" id="autoDetails"></div>
+        </div>
+      </div>
+
+      <!-- Savings Calculator -->
+      <div class="calculator">
+        <h3><span class="icon">💰</span> Savings Growth Calculator</h3>
+        <div class="form-group">
+          <label>Starting Balance ($)</label>
+          <input type="number" id="savStart" value="10000" step="100">
+        </div>
+        <div class="form-group">
+          <label>Monthly Contribution ($)</label>
+          <input type="number" id="savMonthly" value="500" step="50">
+        </div>
+        <div class="form-group">
+          <label>APY (%)</label>
+          <input type="number" id="savRate" value="4.85" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Time Period (Years)</label>
+          <input type="number" id="savYears" value="5" min="1" max="50">
+        </div>
+        <button class="calc-btn" onclick="calcSavings()">Calculate Growth</button>
+        <div class="calc-result" id="savResult">
+          <div class="result-value" id="savTotal"></div>
+          <div class="result-label">Total Balance After Period</div>
+          <div class="result-details" id="savDetails"></div>
+        </div>
+      </div>
+
+      <!-- Debt Payoff Calculator -->
+      <div class="calculator">
+        <h3><span class="icon">📉</span> Debt Payoff Calculator</h3>
+        <div class="form-group">
+          <label>Total Debt ($)</label>
+          <input type="number" id="debtTotal" value="25000" step="500">
+        </div>
+        <div class="form-group">
+          <label>Interest Rate (APR %)</label>
+          <input type="number" id="debtRate" value="20.7" step="0.1">
+        </div>
+        <div class="form-group">
+          <label>Monthly Payment ($)</label>
+          <input type="number" id="debtPayment" value="500" step="50">
+        </div>
+        <button class="calc-btn" onclick="calcDebt()">Calculate Payoff</button>
+        <div class="calc-result" id="debtResult">
+          <div class="result-value" id="debtMonths"></div>
+          <div class="result-label">Months to Pay Off</div>
+          <div class="result-details" id="debtDetails"></div>
+        </div>
+      </div>
+
+      <!-- Affordability Calculator -->
+      <div class="calculator">
+        <h3><span class="icon">🏡</span> Home Affordability Calculator</h3>
+        <div class="form-group">
+          <label>Annual Income ($)</label>
+          <input type="number" id="affIncome" value="85000" step="1000">
+        </div>
+        <div class="form-group">
+          <label>Monthly Debts ($)</label>
+          <input type="number" id="affDebt" value="500" step="50">
+        </div>
+        <div class="form-group">
+          <label>Down Payment ($)</label>
+          <input type="number" id="affDown" value="50000" step="1000">
+        </div>
+        <div class="form-group">
+          <label>Interest Rate (%)</label>
+          <input type="number" id="affRate" value="6.74" step="0.01">
+        </div>
+        <button class="calc-btn" onclick="calcAfford()">Calculate</button>
+        <div class="calc-result" id="affResult">
+          <div class="result-value" id="affMax"></div>
+          <div class="result-label">Maximum Home Price</div>
+          <div class="result-details" id="affDetails"></div>
+        </div>
+      </div>
+
+      <!-- Refinance Calculator -->
+      <div class="calculator">
+        <h3><span class="icon">🔄</span> Refinance Savings Calculator</h3>
+        <div class="form-group">
+          <label>Current Loan Balance ($)</label>
+          <input type="number" id="refiBalance" value="280000" step="1000">
+        </div>
+        <div class="form-group">
+          <label>Current Rate (%)</label>
+          <input type="number" id="refiOldRate" value="7.50" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>New Rate (%)</label>
+          <input type="number" id="refiNewRate" value="6.25" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Remaining Term (Years)</label>
+          <input type="number" id="refiTerm" value="25" min="1" max="30">
+        </div>
+        <button class="calc-btn" onclick="calcRefi()">Calculate Savings</button>
+        <div class="calc-result" id="refiResult">
+          <div class="result-value" id="refiSavings"></div>
+          <div class="result-label">Monthly Savings</div>
+          <div class="result-details" id="refiDetails"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison Table -->
+  <div id="compare">
+    <h2 class="section-title">Rate Comparison: Banks vs Credit Unions vs Online</h2>
+    <p class="section-subtitle">Credit unions consistently offer better rates than big banks.</p>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Big Banks</th>
+          <th>Credit Unions</th>
+          <th>Online Banks</th>
+          <th>Best For</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>30-yr Mortgage</td><td>7.00%</td><td class="best">6.50%</td><td>6.74%</td><td>Credit Union</td></tr>
+        <tr><td>15-yr Mortgage</td><td>6.25%</td><td class="best">5.75%</td><td>5.99%</td><td>Credit Union</td></tr>
+        <tr><td>Savings APY</td><td>0.01%</td><td>3.50%</td><td class="best">4.85%</td><td>Online Bank</td></tr>
+        <tr><td>12-mo CD</td><td>3.50%</td><td>4.25%</td><td class="best">4.50%</td><td>Online Bank</td></tr>
+        <tr><td>Auto Loan (New)</td><td>7.49%</td><td class="best">5.99%</td><td>6.49%</td><td>Credit Union</td></tr>
+        <tr><td>Auto Loan (Used)</td><td>8.49%</td><td class="best">6.49%</td><td>7.29%</td><td>Credit Union</td></tr>
+        <tr><td>Personal Loan</td><td>12.99%</td><td class="best">9.99%</td><td>10.49%</td><td>Credit Union</td></tr>
+        <tr><td>Credit Card</td><td>24.99%</td><td class="best">14.99%</td><td>19.99%</td><td>Credit Union</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Free Resources -->
+  <div id="resources">
+    <h2 class="section-title">Free Financial Resources</h2>
+    <p class="section-subtitle">Tools and guides to help you make better financial decisions.</p>
+
+    <div class="resources">
+      <div class="resource-card">
+        <div class="r-icon">📊</div>
+        <h4>Understanding Your Credit Score</h4>
+        <p>What goes into your FICO score and how to improve it — the factors that matter most for getting better rates.</p>
+      </div>
+      <div class="resource-card">
+        <div class="r-icon">🏦</div>
+        <h4>How to Join a Credit Union</h4>
+        <p>Credit unions offer 0.5-2% better rates than banks. Here's how to find and join one near you.</p>
+      </div>
+      <div class="resource-card">
+        <div class="r-icon">📋</div>
+        <h4>Mortgage Pre-Approval Checklist</h4>
+        <p>The documents you need, the questions to ask, and the mistakes to avoid when getting pre-approved.</p>
+      </div>
+      <div class="resource-card">
+        <div class="r-icon">💡</div>
+        <h4>When to Refinance</h4>
+        <p>The 1% rule, break-even analysis, and hidden costs — a clear framework for the refinance decision.</p>
+      </div>
+      <div class="resource-card">
+        <div class="r-icon">🎓</div>
+        <h4>First-Time Homebuyer Guide</h4>
+        <p>From saving for a down payment to closing day. Programs, grants, and tips specific to your state.</p>
+      </div>
+      <div class="resource-card">
+        <div class="r-icon">🛡️</div>
+        <h4>FDIC & NCUA Insurance</h4>
+        <p>Your deposits are insured up to $250K. Understand the difference between FDIC (banks) and NCUA (credit unions).</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="footer-inner">
+    <div>
+      <div class="logo" style="color:white;margin-bottom:12px;">Local<span style="color:#93c5fd">Rates</span>Finder</div>
+      <p class="footer-brand">Free rate comparison and financial calculators for everyone. No signup required. No data collected. Your calculations stay on your device.<br><br>We believe financial tools should be accessible to all.</p>
+    </div>
+    <div>
+      <h4>Calculators</h4>
+      <a href="#calculators">Mortgage Calculator</a><br>
+      <a href="#calculators">Auto Loan Calculator</a><br>
+      <a href="#calculators">Savings Calculator</a><br>
+      <a href="#calculators">Debt Payoff Calculator</a><br>
+      <a href="#calculators">Affordability Calculator</a><br>
+      <a href="#calculators">Refinance Calculator</a>
+    </div>
+    <div>
+      <h4>Resources</h4>
+      <a href="#resources">Credit Score Guide</a><br>
+      <a href="#resources">Credit Union Finder</a><br>
+      <a href="#resources">Homebuyer Guide</a><br>
+      <a href="#resources">Refinance Guide</a>
+    </div>
+    <div>
+      <h4>Rates</h4>
+      <a href="#rates">Mortgage Rates</a><br>
+      <a href="#rates">Savings Rates</a><br>
+      <a href="#rates">Auto Loan Rates</a><br>
+      <a href="#rates">CD Rates</a><br>
+      <a href="#compare">Compare All</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 LocalRatesFinder.com — A Hariom Tatsat Investments project</span>
+    <span>Rates are estimates. Always verify with your financial institution.</span>
+  </div>
+</div>
+
+<script>
+function fmt(n) { return '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+function fmtInt(n) { return '$' + Math.round(n).toLocaleString(); }
+
+function calcMortgage() {
+  const price = +document.getElementById('mortPrice').value;
+  const down = +document.getElementById('mortDown').value / 100;
+  const rate = +document.getElementById('mortRate').value / 100 / 12;
+  const n = +document.getElementById('mortTerm').value;
+  const principal = price * (1 - down);
+  const payment = principal * (rate * Math.pow(1 + rate, n)) / (Math.pow(1 + rate, n) - 1);
+  const totalPaid = payment * n;
+  const totalInterest = totalPaid - principal;
+  document.getElementById('mortPayment').textContent = fmt(payment);
+  document.getElementById('mortDetails').innerHTML =
+    `Loan: ${fmtInt(principal)} | Total Interest: ${fmtInt(totalInterest)} | Total Paid: ${fmtInt(totalPaid)}`;
+  document.getElementById('mortResult').classList.add('show');
+}
+
+function calcAuto() {
+  const price = +document.getElementById('autoPrice').value;
+  const down = +document.getElementById('autoDown').value;
+  const rate = +document.getElementById('autoRate').value / 100 / 12;
+  const n = +document.getElementById('autoTerm').value;
+  const principal = price - down;
+  const payment = principal * (rate * Math.pow(1 + rate, n)) / (Math.pow(1 + rate, n) - 1);
+  const totalInterest = (payment * n) - principal;
+  document.getElementById('autoPayment').textContent = fmt(payment);
+  document.getElementById('autoDetails').innerHTML =
+    `Loan: ${fmtInt(principal)} | Total Interest: ${fmtInt(totalInterest)}`;
+  document.getElementById('autoResult').classList.add('show');
+}
+
+function calcSavings() {
+  const start = +document.getElementById('savStart').value;
+  const monthly = +document.getElementById('savMonthly').value;
+  const rate = +document.getElementById('savRate').value / 100 / 12;
+  const months = +document.getElementById('savYears').value * 12;
+  let balance = start;
+  for (let i = 0; i < months; i++) { balance = (balance + monthly) * (1 + rate); }
+  const totalDeposited = start + (monthly * months);
+  const interestEarned = balance - totalDeposited;
+  document.getElementById('savTotal').textContent = fmtInt(balance);
+  document.getElementById('savDetails').innerHTML =
+    `Deposited: ${fmtInt(totalDeposited)} | Interest Earned: ${fmtInt(interestEarned)}`;
+  document.getElementById('savResult').classList.add('show');
+}
+
+function calcDebt() {
+  const balance = +document.getElementById('debtTotal').value;
+  const rate = +document.getElementById('debtRate').value / 100 / 12;
+  const payment = +document.getElementById('debtPayment').value;
+  if (payment <= balance * rate) {
+    document.getElementById('debtMonths').textContent = '∞';
+    document.getElementById('debtDetails').innerHTML = 'Payment too low — increase to at least ' + fmt(balance * rate + 1);
+    document.getElementById('debtResult').classList.add('show');
+    return;
+  }
+  let remaining = balance; let months = 0; let totalInterest = 0;
+  while (remaining > 0 && months < 600) {
+    const interest = remaining * rate;
+    totalInterest += interest;
+    remaining = remaining + interest - payment;
+    months++;
+  }
+  document.getElementById('debtMonths').textContent = months + ' months';
+  document.getElementById('debtDetails').innerHTML =
+    `${(months / 12).toFixed(1)} years | Total Interest: ${fmtInt(totalInterest)} | Total Paid: ${fmtInt(balance + totalInterest)}`;
+  document.getElementById('debtResult').classList.add('show');
+}
+
+function calcAfford() {
+  const income = +document.getElementById('affIncome').value;
+  const debts = +document.getElementById('affDebt').value;
+  const down = +document.getElementById('affDown').value;
+  const rate = +document.getElementById('affRate').value / 100 / 12;
+  const maxPayment = (income / 12) * 0.28 - debts;
+  const n = 360;
+  const maxLoan = maxPayment * (Math.pow(1 + rate, n) - 1) / (rate * Math.pow(1 + rate, n));
+  const maxHome = maxLoan + down;
+  document.getElementById('affMax').textContent = fmtInt(maxHome);
+  document.getElementById('affDetails').innerHTML =
+    `Max Monthly Payment: ${fmt(maxPayment)} (28% DTI rule) | Max Loan: ${fmtInt(maxLoan)}`;
+  document.getElementById('affResult').classList.add('show');
+}
+
+function calcRefi() {
+  const balance = +document.getElementById('refiBalance').value;
+  const oldRate = +document.getElementById('refiOldRate').value / 100 / 12;
+  const newRate = +document.getElementById('refiNewRate').value / 100 / 12;
+  const n = +document.getElementById('refiTerm').value * 12;
+  const oldPayment = balance * (oldRate * Math.pow(1 + oldRate, n)) / (Math.pow(1 + oldRate, n) - 1);
+  const newPayment = balance * (newRate * Math.pow(1 + newRate, n)) / (Math.pow(1 + newRate, n) - 1);
+  const monthlySavings = oldPayment - newPayment;
+  const totalSavings = monthlySavings * n;
+  document.getElementById('refiSavings').textContent = fmt(monthlySavings) + '/mo';
+  document.getElementById('refiDetails').innerHTML =
+    `Old: ${fmt(oldPayment)}/mo → New: ${fmt(newPayment)}/mo | Total Savings: ${fmtInt(totalSavings)}`;
+  document.getElementById('refiResult').classList.add('show');
+}
+
+function searchRates() {
+  const zip = document.getElementById('zipInput').value;
+  if (zip.length === 5) {
+    alert('Rate search for ZIP ' + zip + ' — feature coming soon! For now, use the national averages and calculators below.');
+  }
+}
+
+// ---- AI Rate Advisor Chat ----
+const rateKB = {
+  'mortgage rate': 'As of April 2026, 30-yr fixed rates average ~6.74%. Your actual rate depends on credit score, LTV, and loan type. 760+ FICO can get 0.25-0.5% better. FHA loans allow lower scores but add MIP. Credit unions typically beat big banks by 0.25-0.50%. Shop at least 3 lenders.',
+  'credit union': 'Credit unions are nonprofit and consistently beat big banks on rates — often 0.25-0.50% lower on mortgages, 1-2% lower on auto loans, and much higher on savings. They\'re member-owned. To join, you usually just need to live in a certain area or belong to an affiliated group. Check NCUA.gov to find one near you.',
+  'savings rate': 'Big bank savings accounts pay nearly nothing (0.01%). Online banks and credit unions pay 4.5-5% APY on high-yield savings in 2026. Moving $50,000 from a big bank to a 4.8% HYSAccount = $2,400/year in extra interest. Always compare before parking cash.',
+  'refinance': 'The break-even rule: divide your closing costs by your monthly savings. If it takes more than 36 months to break even and you plan to move sooner, skip it. In 2026 with rates at 6.5-7%, refinancing only makes sense if you got your mortgage above 7.5%+ or are switching from ARM to fixed.',
+  'credit score': 'FICO scores range 300-850. For the best mortgage rates, you need 760+. Below 620 and most conventional lenders won\'t approve you. Improving from 680 to 760 on a $400K mortgage can save $80-100/month. Pay down revolving debt, dispute errors, and don\'t apply for new credit before buying.',
+  'auto loan': 'Best auto loan rates in 2026: credit unions at 5.5-6.5% for new, 6.5-7.5% used. Big banks are 1-2% higher. Your dealer financing is almost always the worst option (they mark up rates for profit). Always get pre-approved from your credit union before stepping into a dealership.',
+  'cd rate': 'Certificates of Deposit (CDs) in 2026 range from 4.0-4.8% for 12-month terms. Locking in a 12-mo CD makes sense if you don\'t need the money for a year. Ladder CDs (3-mo, 6-mo, 12-mo) to maintain liquidity while earning better rates than savings accounts.',
+  'debt payoff': 'Two strategies: (1) Avalanche — pay highest interest rate first. Saves the most money over time. (2) Snowball — pay smallest balance first. Builds momentum and motivation. Avalanche wins mathematically, snowball wins psychologically. Pick the one you\'ll actually stick to.',
+  'afford': 'Lenders use two DTI ratios: front-end (housing costs ÷ gross income) ≤28%, back-end (all debt ÷ income) ≤36-43%. Rule of thumb: buy a home that costs no more than 3-5x your annual income. Use the Affordability Calculator above for your exact number.',
+  'hys': 'High-Yield Savings Accounts (HYSA) from online banks pay 4.5-5% APY in 2026 vs. 0.01% at big banks. FDIC insured up to $250K. No risk. Best options: Marcus, Ally, Synchrony, or your local credit union. Keep 3-6 months of expenses in liquid HYSA as an emergency fund.',
+  'apr': 'APR (Annual Percentage Rate) includes both the interest rate AND fees (origination, points, etc.), making it the true cost of borrowing. APR is always ≥ the interest rate. Always compare APR — not just the rate — when shopping loans.',
+};
+
+function toggleChat() {
+  const win = document.getElementById('chatWindow');
+  win.classList.toggle('open');
+  document.querySelector('.chat-badge').style.display = 'none';
+}
+function quickSend(msg) {
+  document.getElementById('chatInput').value = msg;
+  sendChat();
+  document.getElementById('quickBtns').style.display = 'none';
+}
+function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  addMsg(msg, 'user');
+  setTimeout(() => addMsg(getRateReply(msg.toLowerCase()), 'agent'), 650);
+}
+function addMsg(text, who) {
+  const msgs = document.getElementById('chatMessages');
+  const now = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  const div = document.createElement('div');
+  div.className = `msg msg-${who}`;
+  div.innerHTML = `<div class="msg-bubble">${text}</div><div class="msg-time">${now}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+function getRateReply(msg) {
+  for (const [key, val] of Object.entries(rateKB)) {
+    if (msg.includes(key.split(' ')[0]) || msg.includes(key)) return val;
+  }
+  if (msg.includes('hi') || msg.includes('hello'))
+    return 'Hi! I can help you understand mortgage rates, savings rates, auto loans, credit scores, CDs, and refinancing. What are you trying to figure out?';
+  if (msg.includes('best') && msg.includes('rate'))
+    return 'For the best rates in 2026: mortgages → credit unions or local banks (6.5-6.75%); savings → online HYSA (4.5-5% APY); auto loans → credit union before dealership (5.5-6.5% new). Shop at least 3 places before committing.';
+  if (msg.includes('invest') || msg.includes('invest'))
+    return 'For liquid savings: HYSA at 4.5-5% APY. For 1-year locked: CD at 4.5-4.8%. For longer-term investing, consider index funds (not a savings product — market risk applies). For real estate investing, check our sister site ohm.homes for investment analysis tools.';
+  return 'I can help with: mortgage rates, credit union vs bank, savings rates, auto loans, CD rates, debt payoff strategies, affordability, and refinancing. Which topic would help most?';
+}
+</script>
+
+<!-- AI Rate Advisor Widget -->
+<style>
+.chat-fab { position: fixed; bottom: 24px; right: 24px; z-index: 1000; }
+.chat-btn { width: 56px; height: 56px; background: linear-gradient(135deg, #1e40af, #2563eb); border-radius: 50%; border: none; color: white; font-size: 22px; cursor: pointer; box-shadow: 0 6px 20px rgba(37,99,235,0.45); transition: transform 0.2s; display: flex; align-items: center; justify-content: center; }
+.chat-btn:hover { transform: scale(1.08); }
+.chat-badge { position: absolute; top: -2px; right: -2px; width: 18px; height: 18px; background: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; font-weight: 700; border: 2px solid white; }
+.chat-window { position: fixed; bottom: 94px; right: 24px; width: 360px; max-height: 500px; background: white; border-radius: 16px; box-shadow: 0 16px 48px rgba(0,0,0,0.15); z-index: 999; display: none; flex-direction: column; overflow: hidden; border: 1px solid #e5e7eb; }
+.chat-window.open { display: flex; }
+.chat-header { background: linear-gradient(135deg, #1e40af, #2563eb); color: white; padding: 14px 18px; display: flex; align-items: center; gap: 10px; }
+.chat-avatar { width: 36px; height: 36px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.chat-header-info strong { display: block; font-size: 14px; }
+.chat-header-info span { font-size: 11px; opacity: 0.75; }
+.chat-close { margin-left: auto; background: none; border: none; color: white; font-size: 18px; cursor: pointer; opacity: 0.7; }
+.chat-close:hover { opacity: 1; }
+.chat-messages { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; min-height: 160px; }
+.msg { max-width: 88%; }
+.msg-agent { align-self: flex-start; }
+.msg-user { align-self: flex-end; }
+.msg-bubble { padding: 10px 13px; border-radius: 12px; font-size: 13px; line-height: 1.5; }
+.msg-agent .msg-bubble { background: #dbeafe; color: #1a1d23; border-bottom-left-radius: 3px; }
+.msg-user .msg-bubble { background: #2563eb; color: white; border-bottom-right-radius: 3px; }
+.msg-time { font-size: 10px; color: #6b7280; margin-top: 2px; }
+.msg-user .msg-time { text-align: right; }
+.chat-quick { padding: 7px 12px; border-top: 1px solid #e5e7eb; display: flex; gap: 5px; flex-wrap: wrap; }
+.quick-btn { padding: 4px 9px; background: #dbeafe; color: #1d4ed8; border: none; border-radius: 20px; font-size: 11px; cursor: pointer; white-space: nowrap; }
+.quick-btn:hover { background: #2563eb; color: white; }
+.chat-input-row { display: flex; gap: 7px; padding: 10px 12px; border-top: 1px solid #e5e7eb; }
+.chat-input { flex: 1; padding: 9px 13px; border: 1px solid #e5e7eb; border-radius: 18px; font-size: 13px; font-family: var(--font); }
+.chat-input:focus { outline: none; border-color: #2563eb; }
+.chat-send { width: 34px; height: 34px; background: #2563eb; color: white; border: none; border-radius: 50%; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.chat-send:hover { background: #1d4ed8; }
+</style>
+
+<div class="chat-fab">
+  <div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+      <div class="chat-avatar">💰</div>
+      <div class="chat-header-info">
+        <strong>Rate Advisor</strong>
+        <span>Free financial guidance</span>
+      </div>
+      <button class="chat-close" onclick="toggleChat()">✕</button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="msg msg-agent">
+        <div class="msg-bubble">Hi! I can explain rates, help you compare loan options, and guide you to the best financial products for your situation. What are you working on?</div>
+        <div class="msg-time">Now</div>
+      </div>
+    </div>
+    <div class="chat-quick" id="quickBtns">
+      <button class="quick-btn" onclick="quickSend('Best mortgage rate?')">Best mortgage rate?</button>
+      <button class="quick-btn" onclick="quickSend('Credit union vs bank')">Credit union vs bank?</button>
+      <button class="quick-btn" onclick="quickSend('Best savings rate')">Best savings rate?</button>
+      <button class="quick-btn" onclick="quickSend('Should I refinance?')">Refinance?</button>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chatInput" type="text" placeholder="Ask about rates, loans, savings..." onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="chat-send" onclick="sendChat()">↑</button>
+    </div>
+  </div>
+  <button class="chat-btn" onclick="toggleChat()" title="Rate Advisor">
+    💰
+    <div class="chat-badge">1</div>
+  </button>
+</div>
+
+</body>
+</html>
