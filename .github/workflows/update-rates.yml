@@ -1,0 +1,25 @@
+name: Update Rates
+on:
+  schedule:
+    - cron: '0 16 * * 4'      # Thursdays 16:00 UTC - after the weekly Freddie Mac PMMS release
+    - cron: '0 16 * * 1'      # Mondays  - picks up daily H.15 series
+  workflow_dispatch:
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fetch current rates from FRED
+        run: python fetch_rates.py
+      - name: Commit if changed
+        run: |
+          git config user.name "rates-bot"
+          git config user.email "actions@github.com"
+          git add data/rates.json
+          git diff --staged --quiet || git commit -m "Update rates from FRED [skip ci]"
+          git push
